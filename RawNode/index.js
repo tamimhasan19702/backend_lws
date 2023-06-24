@@ -2,6 +2,7 @@
 const mathLibrary = require('./lib/Math');
 const quotesLibrary = require('./lib/quotes')
 
+//this is called scaffholding
 const app = {}
 
 app.config = {
