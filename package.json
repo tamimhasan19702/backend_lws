@@ -1,9 +1,20 @@
 {
   "dependencies": {
+    "global": "^4.4.0",
     "node": "^20.2.0",
     "nodemon": "^2.0.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "yarn": "^1.22.19"
-  }
+  },
+  "name": "backend-lws",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start" : "nodemon ./index"
+  },
+  "repository": "https://github.com/tamimhasan19702/backend_lws.git",
+  "author": "tamimhasan19702 <tamimhasancu@gmail.com>",
+  "license": "MIT"
+ 
 }
