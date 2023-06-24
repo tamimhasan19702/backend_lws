@@ -15,15 +15,24 @@ const http = require('http');
 const app = {}
 
 //configuration
-app.config = {}
+app.config = {
+    port: 5000
+}
 
 //create server
 app.createServer = () => {
-    const server = http.createServer(handleReqRes);
+    const server = http.createServer(app.handleReqRes);
+    //listening to the server
+    server.listen(app.config.port, () => {
+        console.log(`Listining to port ${app.config.port}`);
+    })
 }
 
 //handle server request/response
 app.handleReqRes = (req,res) => {
     //response handle
-    res.end('Hello world')
+    res.end('Hello world Bangladesh')
 }
+
+//start the server
+app.createServer()
