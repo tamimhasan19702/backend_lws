@@ -13,7 +13,7 @@
 //dependencies
 const http = require("http");
 const url = require("url");
-const {StringDecoder} = require('string_decoder')
+const { StringDecoder } = require("string_decoder");
 
 //app object for module scaffholding
 const app = {};
@@ -39,17 +39,24 @@ app.handleReqRes = (req, res) => {
   //get the url and parse it
   const parseUrl = url.parse(req.url, true);
   const path = parseUrl.pathname;
-  const trimmedPath = path.replace(/^\/*|\/*$/g,'')
+  const trimmedPath = path.replace(/^\/*|\/*$/g, "");
   const method = req.method.toLowerCase();
   const queryStringObject = parseUrl.query;
-  const headerObject = req.headers; 
+  const headerObject = req.headers;
 
-  req.on('data', (buffer) => {
+  const decoder = new StringDecoder("utf-8");
+  let realData = "";
 
-  })
+  req.on("data", (buffer) => {
+    realData += decoder.write(buffer);
+  });
 
-  //response handle
-  res.end("Hello world");
+  req.on("end", () => {
+    realData += decoder.end();
+    console.log(realData);
+    //response handle
+    res.end("Hello world");
+  });
 };
 
 //start the server
