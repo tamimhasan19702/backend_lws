@@ -5,40 +5,52 @@
  * Date: 24/5/2023
  * *this is the primary file for this Api
  * !this is an complete Raw Node Project. there's no framework being used
+ *
+ * @format
  */
 
 //todo: dependencies
 //dependencies
-const http = require('http');
-const url = require('url');
+const http = require("http");
+const url = require("url");
+const {StringDecoder} = require('string_decoder')
 
 //app object for module scaffholding
-const app = {}
+const app = {};
 
 //configuration
 app.config = {
-    port: 5000
-}
+  port: 5000,
+};
 
 //create server
 app.createServer = () => {
-    const server = http.createServer(app.handleReqRes);
-    //listening to the server
-    server.listen(app.config.port, () => {
-        console.log(`Listining to port ${app.config.port}`);
-    })
-}
+  const server = http.createServer(app.handleReqRes);
+  //listening to the server
+  server.listen(app.config.port, () => {
+    console.log(`Listining to port ${app.config.port}`);
+  });
+};
 
 //handle server request/response
-app.handleReqRes = (req,res) => {
-    //request handling
+app.handleReqRes = (req, res) => {
+  //request handling
 
-    //get the url and parse it
-    const parseUrl = url.parse(req.url, true);
-    
-    //response handle
-    res.end('Hello world')
-}
+  //get the url and parse it
+  const parseUrl = url.parse(req.url, true);
+  const path = parseUrl.pathname;
+  const trimmedPath = path.replace(/^\/*|\/*$/g,'')
+  const method = req.method.toLowerCase();
+  const queryStringObject = parseUrl.query;
+  const headerObject = req.headers; 
+
+  req.on('data', (buffer) => {
+
+  })
+
+  //response handle
+  res.end("Hello world");
+};
 
 //start the server
-app.createServer()
+app.createServer();
