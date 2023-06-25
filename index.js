@@ -10,6 +10,7 @@
 //todo: dependencies
 //dependencies
 const http = require('http');
+const url = require('url');
 
 //app object for module scaffholding
 const app = {}
@@ -30,6 +31,11 @@ app.createServer = () => {
 
 //handle server request/response
 app.handleReqRes = (req,res) => {
+    //request handling
+
+    //get the url and parse it
+    const parseUrl = url.parse(req.url, true);
+    
     //response handle
     res.end('Hello world')
 }
