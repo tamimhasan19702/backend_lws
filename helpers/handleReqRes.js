@@ -38,19 +38,23 @@ handler.handleReqRes = (req, res) => {
 
   const decoder = new StringDecoder("utf-8");
 
+  
+  //this function handle the handlers and add the statusCode and payload for it
+ 
   const chosenHandler = routes[trimmedPath]
     ? routes[trimmedPath]
     : NotfoundHandler;
 
-  //this function handle the handlers and add the statusCode and payload for it
-
   chosenHandler(requestProperties, (statusCode, payload) => {
+   
     statusCode = typeof statusCode === "number" ? statusCode : 500;
+   
     payload = typeof payload === "object" ? payload : {};
 
     const payloadString = JSON.stringify(payload);
 
     //return the final response
+    res.setHeader('content-Type', 'application/json')
     res.writeHead(statusCode);
     res.end(payloadString);
   });
