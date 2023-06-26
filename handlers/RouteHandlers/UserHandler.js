@@ -25,6 +25,27 @@ handler._users = {};
 //post method used to create a new user
 handler._users.post = (requestProperties, callback) => {
 
+const firstName = typeof(requestProperties.body.firstName) === 'string' && requestProperties.body.firstName.trim().length > 0 ? requestProperties.body.firstName : null;
+
+const lastName = typeof(requestProperties.body.lastName) === 'string' && requestProperties.body.lastName.trim().length > 0 ? requestProperties.body.lastName : null;
+
+const phone = typeof(requestProperties.body.phone) === 'string' && requestProperties.body.phone.trim().length === 11 ? requestProperties.body.phone : null;
+
+const password = typeof(requestProperties.body.password) === 'string' && requestProperties.body.password.trim().length > 0 ? requestProperties.body.password : null;
+
+const tosAgreement = typeof(requestProperties.body.tosAgreement) === 'boolean' && requestProperties.body.tosAgreement.trim().length > 0 ? requestProperties.body.tosAgreement : null;
+
+
+if(firstName && lastName && phone && password && tosAgreement){
+//making sure that if user exist or not
+
+}else{
+  callback(400, {
+    message: 'You have problem in your request'
+  })
+}
+
+
 };
 
 handler._users.get = (requestProperties, callback) => {
