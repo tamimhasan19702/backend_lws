@@ -8,7 +8,7 @@
 //dependencies
 const url = require("url");
 const { StringDecoder } = require("string_decoder");
-const routes = require("./Routes");
+const routes = require("../Routes");
 const {
   NotfoundHandler,
 } = require("../handlers/RouteHandlers/NotfoundHandler");
@@ -42,22 +42,10 @@ handler.handleReqRes = (req, res) => {
     ? routes[trimmedPath]
     : NotfoundHandler;
 
-  //this function handle the handlers and add the statusCode and payload for it
-
-  chosenHandler(requestProperties, (statusCode, payload) => {
-    statusCode = typeof statusCode === "number" ? statusCode : 500;
-    payload = typeof payload === "object" ? payload : {};
-
-    const payloadString = JSON.stringify(payload);
-
-    //return the final response
-    res.writeHead(statusCode);
-    res.end(payloadString);
-  });
-
   //request data reference in buffer
   let realData = "";
 
+  // wroking with req
   req.on("data", (buffer) => {
     realData += decoder.write(buffer);
   });
@@ -65,9 +53,22 @@ handler.handleReqRes = (req, res) => {
   //request data end with the realData
   req.on("end", () => {
     realData += decoder.end();
-    console.log(realData);
-    //response handle
-    res.end("Hello world");
+
+    requestProperties.body = realData;
+    //this function handle the handlers and add the statusCode and payload for it
+
+    chosenHandler(requestProperties, (statusCode, payload) => {
+      statusCode = typeof statusCode === "number" ? statusCode : 500;
+
+      payload = typeof payload === "object" ? payload : {};
+
+      const payloadString = JSON.stringify(payload);
+
+      //return the final response
+      res.setHeader("content-Type", "application/json");
+      res.writeHead(statusCode);
+      res.end(payloadString);
+    });
   });
 };
 
