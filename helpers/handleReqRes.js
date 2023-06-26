@@ -12,6 +12,10 @@ const routes = require("../Routes");
 const {
   NotfoundHandler,
 } = require("../handlers/RouteHandlers/NotfoundHandler");
+const {parseJSON} = require('./utilities');
+
+
+
 
 //module scaffholding
 const handler = {};
@@ -54,7 +58,8 @@ handler.handleReqRes = (req, res) => {
   req.on("end", () => {
     realData += decoder.end();
 
-    requestProperties.body = realData;
+    requestProperties.body = parseJSON(realData);
+    
     //this function handle the handlers and add the statusCode and payload for it
 
     chosenHandler(requestProperties, (statusCode, payload) => {
