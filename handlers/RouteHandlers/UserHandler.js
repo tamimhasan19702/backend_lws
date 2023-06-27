@@ -6,6 +6,7 @@
 
 //dependencies
 const data = require("../../lib/data");
+const { hash } = require("../../helpers/utilities");
 
 //module scaffholding
 
@@ -57,18 +58,26 @@ handler._users.post = (requestProperties, callback) => {
       ? requestProperties.body.tosAgreement
       : null;
 
+
+  //making sure that if user exist or not
   if (firstName && lastName && phone && password && tosAgreement) {
-    //making sure that if user exist or not
     data.read("users", phone, (err, user) => {
-    if(err){
-
-    }else{
-      callback(500,{
-        error: 'There was a problem in server side'
-      })
-    }
+      if (err) {
+        let userObject = {
+          firstName,
+          lastName,
+          phone,
+          password: hash(password),
+          tosAgreement,
+        };
+        // store the user to database
+        
+      } else {
+        callback(500, {
+          error: "There was a problem in server side",
+        });
+      }
     });
-
   } else {
     callback(400, {
       message: "You have problem in your request",

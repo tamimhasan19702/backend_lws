@@ -27,8 +27,13 @@ utilities.parseJSON = (jsonString) => {
 //hashing the user password
 utilities.hash = (str) => {
     if(typeof(str) === 'string' && str.length > 0){
-      let hash = crypto.createHmac()
+      let hash = crypto
+      .createHmac('shah256', environments[process.env.NODE_ENV].secretKey)
+      .update(str)
+      .digest('hex');
+      return hash;
     }
+    return false;
 }
 
 // export module
