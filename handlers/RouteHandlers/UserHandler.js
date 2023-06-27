@@ -58,11 +58,10 @@ handler._users.post = (requestProperties, callback) => {
       ? requestProperties.body.tosAgreement
       : null;
 
-
   //making sure that if user exist or not
   if (firstName && lastName && phone && password && tosAgreement) {
-    data.read("users", phone, (err, user) => {
-      if (err) {
+    data.read("users", phone, (err1) => {
+      if (err1) {
         let userObject = {
           firstName,
           lastName,
@@ -70,20 +69,32 @@ handler._users.post = (requestProperties, callback) => {
           password: hash(password),
           tosAgreement,
         };
+
         // store the user to database
-        
+        data.create("users", phone, userObject, (err2) => {
+          if (!err2) {
+            callback(200, {
+              message: "User was created successfully",
+            });
+          } else {
+            callback(500, { error: "Could not create user!!" });
+          }
+        });
       } else {
         callback(500, {
           error: "There was a problem in server side",
         });
       }
     });
+
+
   } else {
     callback(400, {
       message: "You have problem in your request",
     });
   }
 };
+
 
 handler._users.get = (requestProperties, callback) => {
   callback(200);
