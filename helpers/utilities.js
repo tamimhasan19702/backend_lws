@@ -3,10 +3,13 @@
  * description: Important utility functions
  * Author : tareq
  */
+//dependencies
+const crypto = require('crypto');
+const environments = require('./environments');
 
 //module scaffholding
 
-const utilities = {}
+const utilities = {};
 
 //parse JSON string to object
 utilities.parseJSON = (jsonString) => {
@@ -19,6 +22,13 @@ utilities.parseJSON = (jsonString) => {
     }
 
     return output;
+}
+
+//hashing the user password
+utilities.hash = (str) => {
+    if(typeof(str) === 'string' && str.length > 0){
+      let hash = crypto.createHmac()
+    }
 }
 
 // export module
