@@ -7,6 +7,7 @@
 //dependencies
 const data = require("../../lib/data");
 const { hash } = require("../../helpers/utilities");
+const { parseJSON } = require("../../helpers/utilities");
 
 //module scaffholding
 
@@ -86,8 +87,6 @@ handler._users.post = (requestProperties, callback) => {
         });
       }
     });
-
-
   } else {
     callback(400, {
       message: "You have problem in your request",
@@ -95,9 +94,34 @@ handler._users.post = (requestProperties, callback) => {
   }
 };
 
-
+// give response as phone number as query string
 handler._users.get = (requestProperties, callback) => {
-  callback(200);
+  //check the phone number is valid or not
+  const phone =
+    typeof requestProperties.queryStringObject.phone === "string" &&
+    requestProperties.queryStringObject.phone.trim().length === 11
+      ? requestProperties.queryStringObject.phone
+      : null;
+
+  if (phone) {
+    //look up the user
+    data.read("users", phone, (err, u) => {
+      const user = {...parseJSON(u)}
+      //copied user object immutably
+      if (!err && user) {
+        delete user.password;
+        callback(200,user)
+      } else {
+        callback(404, {
+          error: "Requested user was not found!",
+        });
+      }
+    });
+  } else {
+    callback(404, {
+      error: "Requested user was not found!",
+    });
+  }
 };
 
 handler._users.put = (requestProperties, callback) => {};
