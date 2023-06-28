@@ -11,8 +11,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start" : "NODE_ENV=staging nodemon index",
-    "production" : "NODE_ENV=production nodemon index"
+    "start" : "nodemon index",
+    "production" : "nodemon index"
   },
   "repository": "https://github.com/tamimhasan19702/backend_lws.git",
   "author": "tamimhasan19702 <tamimhasancu@gmail.com>",

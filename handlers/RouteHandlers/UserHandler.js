@@ -54,7 +54,7 @@ handler._users.post = (requestProperties, callback) => {
 
   const tosAgreement =
     typeof requestProperties.body.tosAgreement === "boolean" &&
-    requestProperties.body.tosAgreement.trim().length > 0
+    requestProperties.body.tosAgreement
       ? requestProperties.body.tosAgreement
       : null;
 
@@ -62,7 +62,7 @@ handler._users.post = (requestProperties, callback) => {
   if (firstName && lastName && phone && password && tosAgreement) {
     data.read("users", phone, (err1) => {
       if (err1) {
-        let userObject = {
+        const userObject = {
           firstName,
           lastName,
           phone,
