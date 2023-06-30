@@ -124,8 +124,18 @@ handler._users.get = (requestProperties, callback) => {
   }
 };
 
-handler._users.put = (requestProperties, callback) => {};
+//update the existing user
+handler._users.put = (requestProperties, callback) => {
+//check the phone number is valid or not
+const phone =
+typeof requestProperties.queryStringObject.phone === "string" &&
+requestProperties.queryStringObject.phone.trim().length === 11
+  ? requestProperties.queryStringObject.phone
+  : null;
+};
 
-handler._users.delete = (requestProperties, callback) => {};
+handler._users.delete = (requestProperties, callback) => {
+  
+};
 
 module.exports = handler;
