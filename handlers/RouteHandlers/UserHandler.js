@@ -27,6 +27,7 @@ handler.userHandler = (requestProperties, callback) => {
 
 handler._users = {};
 
+
 //post method used to create a new user
 handler._users.post = (requestProperties, callback) => {
   const firstName =
@@ -95,6 +96,7 @@ handler._users.post = (requestProperties, callback) => {
 };
 
 // give response as phone number as query string
+//todo: authentication must add
 handler._users.get = (requestProperties, callback) => {
   //check the phone number is valid or not
   const phone =
@@ -124,6 +126,7 @@ handler._users.get = (requestProperties, callback) => {
   }
 };
 
+//todo: authentication must add
 //update the existing user
 handler._users.put = (requestProperties, callback) => {
   //check the phone number is valid or not
@@ -199,7 +202,7 @@ handler._users.put = (requestProperties, callback) => {
 };
 
 // deleted user information with this handler
-
+//todo: authentication must add
 handler._users.delete = (requestProperties, callback) => {
   //check the phone number is valid or not
   const phone =
