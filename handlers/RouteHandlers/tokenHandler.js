@@ -28,7 +28,36 @@ handler.tokenHandler = (requestProperties, callback) => {
 handler._token = {};
 
 //post method used to create a new user
-handler._token.post = (requestProperties, callback) => {};
+handler._token.post = (requestProperties, callback) => {
+  const phone =
+    typeof requestProperties.body.phone === "string" &&
+    requestProperties.body.phone.trim().length === 11
+      ? requestProperties.body.phone
+      : null;
+
+  const password =
+    typeof requestProperties.body.password === "string" &&
+    requestProperties.body.password.trim().length > 0
+      ? requestProperties.body.password
+      : null;
+
+  if (phone && password) {
+    data.read("users", phone, (err1, userData) => {
+      let hashPassword = hash(password);
+      if (hashPassword === userData.password) {
+
+      } else {
+        callback(400, {
+          error: "Password is not Valid!",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      error: "You have a problem in your request",
+    });
+  }
+};
 
 // give response as phone number as query string
 //todo: authentication must add
