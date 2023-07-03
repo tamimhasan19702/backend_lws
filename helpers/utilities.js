@@ -36,5 +36,12 @@ utilities.hash = (str) => {
     return false;
 }
 
+
+//create random string
+utilities.createRandomString = (strlength) => {
+ 
+  return 'ahsaahjsha';
+}
+
 // export module
 module.exports = utilities;
