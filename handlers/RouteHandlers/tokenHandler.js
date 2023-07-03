@@ -6,8 +6,11 @@
 
 //dependencies
 const data = require("../../lib/data");
-const { hash } = require("../../helpers/utilities");
-const { parseJSON } = require("../../helpers/utilities");
+const {
+  hash,
+  createRandomString,
+  parseJSON,
+} = require("../../helpers/utilities");
 
 //module scaffholding
 
@@ -45,7 +48,24 @@ handler._token.post = (requestProperties, callback) => {
     data.read("users", phone, (err1, userData) => {
       let hashPassword = hash(password);
       if (hashPassword === userData.password) {
+        let tokenId = createRandomString(20);
+        let expires = Date.now() + 60 * 60 * 1000;
+        let tokenObject = {
+          phone: phone,
+          id: tokenId,
+          expires: expires,
+        };
 
+        //store the token in my database
+        data.create("tokens", tokenId, tokenObject, (err2) => {
+          if (!err2) {
+            callback(200, tokenObject);
+          } else {
+            callback(500, {
+              error: "There was a problem in the server side",
+            });
+          }
+        });
       } else {
         callback(400, {
           error: "Password is not Valid!",
