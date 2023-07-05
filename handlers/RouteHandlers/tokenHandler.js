@@ -6,11 +6,9 @@
 
 //dependencies
 const data = require("../../lib/data");
-const {
-  hash,
-  createRandomString,
-  parseJSON,
-} = require("../../helpers/utilities");
+const { hash } = require("../../helpers/utilities");
+const { createRandomString } = require("../../helpers/utilities");
+const { parseJSON } = require("../../helpers/utilities");
 
 //module scaffholding
 
@@ -18,9 +16,8 @@ const handler = {};
 
 handler.tokenHandler = (requestProperties, callback) => {
   const acceptedMethods = ["get", "post", "put", "delete"];
-
   if (acceptedMethods.indexOf(requestProperties.method) > -1) {
-    handler.token[requestProperties.method](requestProperties, callback);
+    handler._token[requestProperties.method](requestProperties, callback);
   } else {
     callback(405);
   }
@@ -36,39 +33,38 @@ handler._token.post = (requestProperties, callback) => {
     typeof requestProperties.body.phone === "string" &&
     requestProperties.body.phone.trim().length === 11
       ? requestProperties.body.phone
-      : null;
+      : false;
 
   const password =
     typeof requestProperties.body.password === "string" &&
     requestProperties.body.password.trim().length > 0
       ? requestProperties.body.password
-      : null;
-
+      : false;
   if (phone && password) {
     data.read("users", phone, (err1, userData) => {
-      let hashPassword = hash(password);
-      if (hashPassword === userData.password) {
-        let tokenId = createRandomString(20);
-        let expires = Date.now() + 60 * 60 * 1000;
-        let tokenObject = {
-          phone: phone,
+      const hashedpassword = hash(password);
+      if (hashedpassword === parseJSON(userData).password) {
+        const tokenId = createRandomString(20);
+        const expires = Date.now() + 60 * 60 * 1000;
+        const tokenObject = {
+          phone,
           id: tokenId,
-          expires: expires,
+          expires,
         };
 
-        //store the token in my database
+        // store the token
         data.create("tokens", tokenId, tokenObject, (err2) => {
           if (!err2) {
             callback(200, tokenObject);
           } else {
             callback(500, {
-              error: "There was a problem in the server side",
+              error: "There was a problem in the server side!",
             });
           }
         });
       } else {
         callback(400, {
-          error: "Password is not Valid!",
+          error: "Password is not valid!",
         });
       }
     });
@@ -80,8 +76,33 @@ handler._token.post = (requestProperties, callback) => {
 };
 
 // give response as phone number as query string
-//todo: authentication must add
-handler._token.get = (requestProperties, callback) => {};
+handler._token.get = (requestProperties, callback) => {
+  //check the id is valid or not
+  const id =
+    typeof requestProperties.queryStringObject.id === "string" &&
+    requestProperties.queryStringObject.id.trim().length === 11
+      ? requestProperties.queryStringObject.id
+      : null;
+
+  if (id) {
+    //look up the token
+    data.read("tokens", id, (err, tokenData) => {
+      const token = { ...parseJSON(tokenData) };
+      //copied token object immutably
+      if (!err && token) {
+        callback(200, token);
+      } else {
+        callback(404, {
+          error: "Requested token was not found!",
+        });
+      }
+    });
+  } else {
+    callback(404, {
+      error: "Requested token was not found!",
+    });
+  }
+};
 
 //todo: authentication must add
 //update the existing user
