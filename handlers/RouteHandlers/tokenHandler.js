@@ -40,6 +40,7 @@ handler._token.post = (requestProperties, callback) => {
     requestProperties.body.password.trim().length > 0
       ? requestProperties.body.password
       : false;
+
   if (phone && password) {
     data.read("users", phone, (err1, userData) => {
       const hashedpassword = hash(password);
@@ -77,18 +78,16 @@ handler._token.post = (requestProperties, callback) => {
 
 // give response as phone number as query string
 handler._token.get = (requestProperties, callback) => {
-  //check the id is valid or not
+  // check the id if valid
   const id =
     typeof requestProperties.queryStringObject.id === "string" &&
-    requestProperties.queryStringObject.id.trim().length === 11
+    requestProperties.queryStringObject.id.trim().length === 20
       ? requestProperties.queryStringObject.id
-      : null;
-
+      : false;
   if (id) {
-    //look up the token
+    // lookup the token
     data.read("tokens", id, (err, tokenData) => {
       const token = { ...parseJSON(tokenData) };
-      //copied token object immutably
       if (!err && token) {
         callback(200, token);
       } else {
@@ -106,10 +105,99 @@ handler._token.get = (requestProperties, callback) => {
 
 //todo: authentication must add
 //update the existing user
-handler._token.put = (requestProperties, callback) => {};
+handler._token.put = (requestProperties, callback) => {
+  const id =
+    typeof requestProperties.body.id === "string" &&
+    requestProperties.body.id.trim().length === 20
+      ? requestProperties.body.id
+      : false;
+  const extend = !!(
+    typeof requestProperties.body.extend === "boolean" &&
+    requestProperties.body.extend === true
+  );
+
+  if (id && extend) {
+    data.read("tokens", id, (err1, tokenData) => {
+      const tokenObject = parseJSON(tokenData);
+      if (tokenObject.expires > Date.now()) {
+        tokenObject.expires = Date.now() + 60 * 60 * 1000;
+        // store the updated token
+        data.update("tokens", id, tokenObject, (err2) => {
+          if (!err2) {
+            callback(200);
+          } else {
+            callback(500, {
+              error: "There was a server side error!",
+            });
+          }
+        });
+      } else {
+        callback(400, {
+          error: "Token already expired!",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      error: "There was a problem in your request",
+    });
+  }
+};
 
 // deleted user information with this handler
 //todo: authentication must add
-handler._token.delete = (requestProperties, callback) => {};
+handler._token.delete = (requestProperties, callback) => {
+  // check the token if valid
+  const id =
+    typeof requestProperties.queryStringObject.id === "string" &&
+    requestProperties.queryStringObject.id.trim().length === 20
+      ? requestProperties.queryStringObject.id
+      : false;
+
+  if (id) {
+    // lookup the user
+    data.read("tokens", id, (err1, tokenData) => {
+      if (!err1 && tokenData) {
+        data.delete("tokens", id, (err2) => {
+          if (!err2) {
+            callback(200, {
+              message: "Token was successfully deleted!",
+            });
+          } else {
+            callback(500, {
+              error: "There was a server side error!",
+            });
+          }
+        });
+      } else {
+        callback(500, {
+          error: "There was a server side error!",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      error: "There was a problem in your request!",
+    });
+  }
+};
+
+//varify if token is varified or not
+handler._token.verify = (id, phone, callback) => {
+  data.read("tokens", id, (err, tokenData) => {
+    if (!err && tokenData) {
+      if (
+        parseJSON(tokenData).phone === phone &&
+        parseJSON(tokenData).expires > Date.now()
+      ) {
+        callback(true);
+      } else {
+        callback(false);
+      }
+    } else {
+      callback(false);
+    }
+  });
+};
 
 module.exports = handler;
