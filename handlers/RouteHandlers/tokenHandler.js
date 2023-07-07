@@ -104,8 +104,7 @@ handler._token.get = (requestProperties, callback) => {
   }
 };
 
-//todo: authentication must add
-//update the existing user
+//update the existing token
 handler._token.put = (requestProperties, callback) => {
   const id =
     typeof requestProperties.body.id === "string" &&
@@ -151,8 +150,7 @@ handler._token.put = (requestProperties, callback) => {
   }
 };
 
-// deleted user information with this handler
-//todo: authentication must add
+// deleted token  information with this handler
 handler._token.delete = (requestProperties, callback) => {
   // check the token if valid
   const id =
