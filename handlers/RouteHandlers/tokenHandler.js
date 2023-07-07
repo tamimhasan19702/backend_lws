@@ -84,6 +84,7 @@ handler._token.get = (requestProperties, callback) => {
     requestProperties.queryStringObject.id.trim().length === 20
       ? requestProperties.queryStringObject.id
       : false;
+
   if (id) {
     // lookup the token
     data.read("tokens", id, (err, tokenData) => {
@@ -111,16 +112,21 @@ handler._token.put = (requestProperties, callback) => {
     requestProperties.body.id.trim().length === 20
       ? requestProperties.body.id
       : false;
-  const extend = !!(
+
+  const extend =
     typeof requestProperties.body.extend === "boolean" &&
     requestProperties.body.extend === true
-  );
+      ? true
+      : false;
 
   if (id && extend) {
     data.read("tokens", id, (err1, tokenData) => {
-      const tokenObject = parseJSON(tokenData);
+      
+      let tokenObject = parseJSON(tokenData);
       if (tokenObject.expires > Date.now()) {
         tokenObject.expires = Date.now() + 60 * 60 * 1000;
+
+
         // store the updated token
         data.update("tokens", id, tokenObject, (err2) => {
           if (!err2) {
@@ -131,6 +137,7 @@ handler._token.put = (requestProperties, callback) => {
             });
           }
         });
+        
       } else {
         callback(400, {
           error: "Token already expired!",
