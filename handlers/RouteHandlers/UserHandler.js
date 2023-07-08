@@ -142,7 +142,7 @@ handler._users.get = (requestProperties, callback) => {
   }
 };
 
-//todo: authentication must add
+
 //update the existing user
 handler._users.put = (requestProperties, callback) => {
   //check the phone number is valid or not
@@ -218,7 +218,7 @@ handler._users.put = (requestProperties, callback) => {
 };
 
 // deleted user information with this handler
-//todo: authentication must add
+
 handler._users.delete = (requestProperties, callback) => {
   //check the phone number is valid or not
   const phone =
