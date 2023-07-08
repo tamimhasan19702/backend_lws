@@ -8,6 +8,7 @@
 const data = require("../../lib/data");
 const { hash } = require("../../helpers/utilities");
 const { parseJSON } = require("../../helpers/utilities");
+const tokenHandler = require("./tokenHandler");
 
 //module scaffholding
 
@@ -26,7 +27,6 @@ handler.userHandler = (requestProperties, callback) => {
 //extra scaffholding for users
 
 handler._users = {};
-
 
 //post method used to create a new user
 handler._users.post = (requestProperties, callback) => {
@@ -106,15 +106,31 @@ handler._users.get = (requestProperties, callback) => {
       : null;
 
   if (phone) {
-    //look up the user
-    data.read("users", phone, (err, u) => {
-      const user = { ...parseJSON(u) };
-      //copied user object immutably
-      if (!err && user) {
-        delete user.password;
-        callback(200, user);
+    //verify token
+    let token =
+      typeof requestProperties.headerObject.token === "string"
+        ? requestProperties.headerObject.token
+        : false;
+
+    tokenHandler._token.verify(token, phone, (tokenId) => {
+      if (tokenId) {
+
+        //look up the user
+        data.read("users", phone, (err, u) => {
+          const user = { ...parseJSON(u) };
+          //copied user object immutably
+          if (!err && user) {
+            delete user.password;
+            callback(200, user);
+          } else {
+            callback(404, {
+              error: "Requested user was not found!",
+            });
+          }
+        });
+        
       } else {
-        callback(404, {
+        callback(403, {
           error: "Requested user was not found!",
         });
       }
@@ -126,7 +142,7 @@ handler._users.get = (requestProperties, callback) => {
   }
 };
 
-//todo: authentication must add
+
 //update the existing user
 handler._users.put = (requestProperties, callback) => {
   //check the phone number is valid or not
@@ -202,7 +218,7 @@ handler._users.put = (requestProperties, callback) => {
 };
 
 // deleted user information with this handler
-//todo: authentication must add
+
 handler._users.delete = (requestProperties, callback) => {
   //check the phone number is valid or not
   const phone =
