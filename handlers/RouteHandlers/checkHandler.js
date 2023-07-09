@@ -31,31 +31,31 @@ handler._check = {};
 handler._check.post = (requestProperties, callback) => {
   //validate inputs
 
-  let protocol =
+  const protocol =
     typeof requestProperties.body.protocol === "string" &&
     ["http", "https"].indexOf(requestProperties.body.protocol) > -1
       ? requestProperties.body.protocol
       : false;
 
-  let url =
+  const url =
     typeof requestProperties.body.url === "string" &&
     requestProperties.body.url.trim().length > 0
       ? requestProperties.body.url
       : false;
 
-  let method =
+  const method =
     typeof requestProperties.body.method === "string" &&
     ["GET", "POST", "PUT", "DELETE"].indexOf(requestProperties.body.method) > -1
       ? requestProperties.body.method
       : false;
 
-  let successCodes =
+  const successCodes =
     typeof requestProperties.body.successCodes === "object" &&
     requestProperties.body.successCodes instanceof Array
       ? requestProperties.body.successCodes
       : false;
 
-  let timeOutSeconds =
+  const timeOutSeconds =
     typeof requestProperties.body.timeOutSeconds === "number" &&
     requestProperties.body.timeOutSeconds % 1 === 0 &&
     requestProperties.body.timeOutSeconds >= 1 &&
@@ -161,22 +161,24 @@ handler._check.get = (requestProperties, callback) => {
     //look up the check
     data.read("checks", id, (err, checkData) => {
       if (!err && checkData) {
-        
         const token =
           typeof requestProperties.headerObject.token === "string"
             ? requestProperties.headerObject.token
             : false;
 
-            tokenHandler._token.verify(token, parseJSON(checkData).userPhone, (tokenIsValid) => {
-              if(tokenIsValid){
-                callback(200, parseJSON(checkData));
-              }else{
-                callback(403, {
-                  error: 'Authentication failure!'
-                })
-              }
-            })
-
+        tokenHandler._token.verify(
+          token,
+          parseJSON(checkData).userPhone,
+          (tokenIsValid) => {
+            if (tokenIsValid) {
+              callback(200, parseJSON(checkData));
+            } else {
+              callback(403, {
+                error: "Authentication failure!",
+              });
+            }
+          }
+        );
       } else {
         callback(500, {
           error: "You have a problem in your request!",
@@ -191,7 +193,118 @@ handler._check.get = (requestProperties, callback) => {
 };
 
 //update the existing check handler response
-handler._check.put = (requestProperties, callback) => {};
+handler._check.put = (requestProperties, callback) => {
+  //input validation
+
+  const id =
+    typeof requestProperties.body.id === "string" &&
+    requestProperties.body.id.trim().length === 20
+      ? requestProperties.body.id
+      : false;
+
+  const protocol =
+    typeof requestProperties.body.protocol === "string" &&
+    ["http", "https"].indexOf(requestProperties.body.protocol) > -1
+      ? requestProperties.body.protocol
+      : false;
+
+  const url =
+    typeof requestProperties.body.url === "string" &&
+    requestProperties.body.url.trim().length > 0
+      ? requestProperties.body.url
+      : false;
+
+  const method =
+    typeof requestProperties.body.method === "string" &&
+    ["GET", "POST", "PUT", "DELETE"].indexOf(requestProperties.body.method) > -1
+      ? requestProperties.body.method
+      : false;
+
+  const successCodes =
+    typeof requestProperties.body.successCodes === "object" &&
+    requestProperties.body.successCodes instanceof Array
+      ? requestProperties.body.successCodes
+      : false;
+
+  const timeOutSeconds =
+    typeof requestProperties.body.timeOutSeconds === "number" &&
+    requestProperties.body.timeOutSeconds % 1 === 0 &&
+    requestProperties.body.timeOutSeconds >= 1 &&
+    requestProperties.body.timeOutSeconds <= 5
+      ? requestProperties.body.successCodes
+      : false;
+
+  if (id) {
+    if (protocol || url || method || successCodes || timeOutSeconds) {
+      data.read("checks", id, (err1, checkData) => {
+        if (!err1 && checkData) {
+          let checkObject = parseJSON(checkData);
+
+          const token =
+            typeof requestProperties.headerObject.token === "string"
+              ? requestProperties.headerObject.token
+              : false;
+
+          tokenHandler._token.verify(
+            token,
+            checkObject.userPhone,
+            (tokenIsValid) => {
+              if (tokenIsValid) {
+
+                if (protocol) {
+                  checkObject.protocol = protocol;
+                }
+                if (url) {
+                  checkObject.url = url;
+                }
+                if (method) {
+                  checkObject.method = method;
+                }
+                if (successCodes) {
+                  checkObject.successCodes = successCodes;
+                }
+                if (timeOutSeconds) {
+                  checkObject.timeOutSeconds = timeOutSeconds;
+                }
+
+                //store the checkout Object
+                data.update('checks', id,checkObject,(err2) => {
+                if(!err2){
+                callback(200,{
+                  message: 'Successfully updated'
+                })
+                }else{
+                   callback(500, {
+                    error: 'There was a server side error!'
+                   })
+                }
+                })
+
+
+              } else {
+                callback(403, {
+                  error: "Authorization error",
+                });
+              }
+            }
+          );
+        } else {
+          callback(500, {
+            error: "There was a problem in the server side!",
+          });
+        }
+      });
+    } else {
+      callback(400, {
+        error: "You must provide at least one field to update!",
+      });
+    }
+  } else {
+    callback(400, {
+      error: "You have a problem in your request!",
+    });
+  }
+};
 
 // deleted the existing check request
 handler._check.delete = (requestProperties, callback) => {};
