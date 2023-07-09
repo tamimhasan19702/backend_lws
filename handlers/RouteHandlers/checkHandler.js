@@ -157,11 +157,37 @@ handler._check.get = (requestProperties, callback) => {
       ? requestProperties.queryStringObject.id
       : false;
 
-       if(id){
-
-       }else{
+  if (id) {
+    //look up the check
+    data.read("checks", id, (err, checkData) => {
+      if (!err && checkData) {
         
-       }
+        const token =
+          typeof requestProperties.headerObject.token === "string"
+            ? requestProperties.headerObject.token
+            : false;
+
+            tokenHandler._token.verify(token, parseJSON(checkData).userPhone, (tokenIsValid) => {
+              if(tokenIsValid){
+                callback(200, parseJSON(checkData));
+              }else{
+                callback(403, {
+                  error: 'Authentication failure!'
+                })
+              }
+            })
+
+      } else {
+        callback(500, {
+          error: "You have a problem in your request!",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      error: "You have a problem in your request!",
+    });
+  }
 };
 
 //update the existing check handler response
