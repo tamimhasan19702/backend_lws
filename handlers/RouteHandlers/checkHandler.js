@@ -250,7 +250,6 @@ handler._check.put = (requestProperties, callback) => {
             checkObject.userPhone,
             (tokenIsValid) => {
               if (tokenIsValid) {
-
                 if (protocol) {
                   checkObject.protocol = protocol;
                 }
@@ -268,19 +267,17 @@ handler._check.put = (requestProperties, callback) => {
                 }
 
                 //store the checkout Object
-                data.update('checks', id,checkObject,(err2) => {
-                if(!err2){
-                callback(200,{
-                  message: 'Successfully updated'
-                })
-                }else{
-                   callback(500, {
-                    error: 'There was a server side error!'
-                   })
-                }
-                })
-
-
+                data.update("checks", id, checkObject, (err2) => {
+                  if (!err2) {
+                    callback(200, {
+                      message: "Successfully updated",
+                    });
+                  } else {
+                    callback(500, {
+                      error: "There was a server side error!",
+                    });
+                  }
+                });
               } else {
                 callback(403, {
                   error: "Authorization error",
@@ -307,6 +304,83 @@ handler._check.put = (requestProperties, callback) => {
 };
 
 // deleted the existing check request
-handler._check.delete = (requestProperties, callback) => {};
+handler._check.delete = (requestProperties, callback) => {
+  // check the id if valid
+  const id =
+    typeof requestProperties.queryStringObject.id === "string" &&
+    requestProperties.queryStringObject.id.trim().length === 20
+      ? requestProperties.queryStringObject.id
+      : false;
+
+  if (id) {
+    //look up the check
+    data.read("checks", id, (err1, checkData) => {
+      if (!err1 && checkData) {
+        const token =
+          typeof requestProperties.headerObject.token === "string"
+            ? requestProperties.headerObject.token
+            : false;
+
+        tokenHandler._token.verify(
+          token,
+          parseJSON(checkData).userPhone,
+          (tokenIsValid) => {
+            if (tokenIsValid) {
+              //delete the check data
+              data.delete("checks", id, (err2) => {
+                if (!err2) {
+
+                  data.read(
+                    "users",
+                    parseJSON(checkData).userPhone,
+                    (err3, userData) => {
+
+                      let userObject = parseJSON(userData);
+                      if (!err3 && userData) {
+                        let userChecks =
+                          typeof userObject.checks === "object" &&
+                          userObject.checks instanceof Array
+                            ? userObject.checks
+                            : [];
+
+
+                      //remove the deleted check id from the user's list of checks
+                      
+
+
+
+
+                      } else {
+                        callback(500, {
+                          error: "There was a server side problem!",
+                        });
+                      }
+                    }
+                  );
+                } else {
+                  callback(500, {
+                    error: "There was a server side problem!",
+                  });
+                }
+              });
+            } else {
+              callback(403, {
+                error: "Authentication failure!",
+              });
+            }
+          }
+        );
+      } else {
+        callback(500, {
+          error: "You have a problem in your request!",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      error: "You have a problem in your request!",
+    });
+  }
+};
 
 module.exports = handler;
