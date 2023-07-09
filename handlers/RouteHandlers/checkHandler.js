@@ -6,7 +6,6 @@
 
 //dependencies
 const data = require("../../lib/data");
-const { hash } = require("../../helpers/utilities");
 const { parseJSON, createRandomString } = require("../../helpers/utilities");
 const tokenHandler = require("./tokenHandler");
 const { maxChecks } = require("../../helpers/environments");
@@ -46,7 +45,7 @@ handler._check.post = (requestProperties, callback) => {
 
   let method =
     typeof requestProperties.body.method === "string" &&
-    ["get", "post", "put", "delete"].indexOf(requestProperties.body.method) > -1
+    ["GET", "POST", "PUT", "DELETE"].indexOf(requestProperties.body.method) > -1
       ? requestProperties.body.method
       : false;
 
@@ -150,7 +149,20 @@ handler._check.post = (requestProperties, callback) => {
 };
 
 // give response to check handler function
-handler._check.get = (requestProperties, callback) => {};
+handler._check.get = (requestProperties, callback) => {
+  // check the id if valid
+  const id =
+    typeof requestProperties.queryStringObject.id === "string" &&
+    requestProperties.queryStringObject.id.trim().length === 20
+      ? requestProperties.queryStringObject.id
+      : false;
+
+       if(id){
+
+       }else{
+        
+       }
+};
 
 //update the existing check handler response
 handler._check.put = (requestProperties, callback) => {};
