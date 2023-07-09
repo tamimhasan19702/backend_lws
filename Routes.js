@@ -11,12 +11,14 @@
 const { sampleHandler } = require("./handlers/RouteHandlers/SampleHandler");
 const { userHandler } = require("./handlers/RouteHandlers/UserHandler");
 const { tokenHandler } = require("./handlers/RouteHandlers/tokenHandler");
+const { checkHandler } = require("./handlers/RouteHandlers/checkHandler");
 
 
 const routes = {
   sample: sampleHandler,
   user: userHandler,
   token: tokenHandler,
+  check: checkHandler
 };
 
 module.exports = routes;

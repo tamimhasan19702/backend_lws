@@ -96,7 +96,6 @@ handler._users.post = (requestProperties, callback) => {
 };
 
 // give response as phone number as query string
-//todo: authentication must add
 handler._users.get = (requestProperties, callback) => {
   //check the phone number is valid or not
   const phone =
