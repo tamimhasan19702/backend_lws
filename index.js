@@ -1,8 +1,8 @@
 /**
- * Title: Uptime monitoring system Api
- * Description: A Restful Api for to monitor up and down time of user defined links
- * Author: Tareq Monower
- * Date: 24/5/2023
+ * *Title: Project initial file
+ * *Description: Initial file to start the server and the workers
+ * *Author: Tareq Monower
+ *
  * *this is the primary file for this Api
  * !this is an complete Raw Node Project. there's no framework being used
  *
@@ -11,28 +11,21 @@
 
 //todo: dependencies
 //dependencies
-const http = require("http");
-const {handleReqRes} = require('./helpers/handleReqRes')
+
+const server = require("./lib/server");
+const worker = require("./lib/worker");
 
 //app object for module scaffholding
 const app = {};
 
-//configuration
-app.config = {
-  port: 5000,
+app.init = () => {
+  //start the server
+  server.init();
+  //start the worker
+  worker.init();
 };
 
-//create server
-app.createServer = () => {
-  const server = http.createServer(app.handleReqRes);
-  //listening to the server
-  server.listen(app.config.port, () => {
-    console.log(`Listining to port ${app.config.port}`);
-  });
-};
+app.init();
 
-//handle server request/response
-app.handleReqRes = handleReqRes;
-
-//start the server
-app.createServer();
+//export the app
+module.exports = app;
