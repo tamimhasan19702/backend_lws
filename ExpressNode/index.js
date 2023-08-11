@@ -10,6 +10,6 @@ app.get('/sample',(req,res) => {
     res.send('This is a Sample route');
 })
 
-app.listen(5000, () => {
-    console.log('The server is listenting at server 5000')
-})
+app.listen(6000, () => {
+    console.log('The server is listenting at server 6000')
+}) 
