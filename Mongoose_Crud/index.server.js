@@ -16,7 +16,7 @@ mongoose.connect('mongodb://localhost/todos', {
 .catch((err) => console.log(err))
 
 //application routes
-
+app.use('/todo'. todoHandler)
 
 //error handler
 function errorHandler(err, req, res, next) {
