@@ -82,8 +82,8 @@ handler._token.get = (requestProperties, callback) => {
   const id =
     typeof requestProperties.queryStringObject.id === "string" &&
     requestProperties.queryStringObject.id.trim().length === 20
-      ? requestProperties.queryStringObject.id
-      : false;
+      ? requestProperties.queryStringObject.id 
+      : false; 
 
   if (id) {
     // lookup the token

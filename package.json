@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "express": "^4.18.2",
     "global": "^4.4.0",
+    "mongoose": "^7.4.2",
     "node": "^20.2.0",
     "nodemon": "^2.0.22",
     "react": "^18.2.0",
@@ -11,11 +13,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start" : "nodemon index",
-    "production" : "nodemon index"
+    "start": "nodemon index",
+    "production": "nodemon index"
   },
   "repository": "https://github.com/tamimhasan19702/backend_lws.git",
   "author": "tamimhasan19702 <tamimhasancu@gmail.com>",
   "license": "MIT"
- 
 }
